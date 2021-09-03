@@ -7,6 +7,7 @@ using namespace std;
 
 struct Cell
 {
+    int x, y;
     int group;
     bool up = true;
     bool right = true;
@@ -15,7 +16,7 @@ struct Cell
 };
 
 struct GroupInfo{
-    vector<int> members;
+    vector<Cell> members;
     int branch_count = 0;
 };
 
@@ -29,10 +30,13 @@ int group_count = 1;
 
 void set_row()
 {
-    groups.clear();
+    // groups.clear();
 
     for (int i = 0; i < n; i++)
     {
+        cells[current_col][i].x = i;
+        cells[current_col][i].y = current_col;
+
         if (cells[current_col][i].group == 0)
         {
             cells[current_col][i].group = group_count;
@@ -40,7 +44,7 @@ void set_row()
             if (groups.find(group_count) == groups.end()){
                 groups.insert(make_pair(group_count, GroupInfo()));
             }
-            groups[group_count].members.push_back(i);
+            groups[group_count].members.push_back(cells[current_col][i]);
 
             group_count++;
         }
@@ -48,7 +52,7 @@ void set_row()
             if (groups.find(cells[current_col][i].group) == groups.end()){
                 groups.insert(make_pair(cells[current_col][i].group, GroupInfo()));
             }
-            groups[cells[current_col][i].group].members.push_back(i);
+            groups[cells[current_col][i].group].members.push_back(cells[current_col][i]);
         }
     }
 }
@@ -65,7 +69,7 @@ void rand_union()
             current_group = cells[current_col][i].group;
             prev_group = cells[current_col][i + 1].group;
 
-            cells[current_col][i + 1].group = current_group;
+            // cells[current_col][i + 1].group = current_group;
             cells[current_col][i + 1].left = false;
             cells[current_col][i].right = false;
 
@@ -90,20 +94,24 @@ void down_cell()
                 
                 if (rand() % 2 == 0 || iter->second.members.size() == 1)        // 50% 확률로 아래 블럭과 joint, 혹은 맴버 크기가 1개일 경우 아래블럭과 joint
                 {
-                    current_cell_index = iter->second.members[i];
-                    cells[current_col + 1][current_cell_index].group = cells[current_col][current_cell_index].group;
+                    current_cell_index = iter->second.members[i].x;
+                    // cells[current_col + 1][current_cell_index].group = cells[current_col][current_cell_index].group;
                     cells[current_col + 1][current_cell_index].up = false;
                     cells[current_col][current_cell_index].down = false;
+
+                    groups[cells[current_col][current_cell_index].group].members.push_back(cells[current_col + 1][current_cell_index]);
 
                     iter->second.branch_count++;
                 }
             }
 
             if (iter->second.branch_count == 0){
-                current_cell_index = iter->second.members[rand() % iter->second.members.size()];
-                cells[current_col + 1][current_cell_index].group = cells[current_col][current_cell_index].group;
+                current_cell_index = iter->second.members[rand() % iter->second.members.size()].x;
+                // cells[current_col + 1][current_cell_index].group = cells[current_col][current_cell_index].group;
                 cells[current_col + 1][current_cell_index].up = false;
                 cells[current_col][current_cell_index].down = false;
+
+                groups[cells[current_col][current_cell_index].group].members.push_back(cells[current_col + 1][current_cell_index]);
             }   
         }
     }
@@ -162,6 +170,14 @@ void set_last_line(){
     }
 }
 
+void regroup(){
+     for (iter = groups.begin(); iter != groups.end(); iter++){
+        for (int i = 0; i < iter->second.members.size(); i++){
+            iter->second.members[i].group = iter->first;
+        }
+     }
+}
+
 int main()
 {
     cin >> n;
@@ -172,6 +188,7 @@ int main()
         set_row();
         rand_union();
         down_cell();
+        regroup();
         print_maze();
     }
     set_last_line();

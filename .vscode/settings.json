@@ -1,6 +1,16 @@
 {
     "files.associations": {
         "utility": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "map": "cpp",
+        "xtree": "cpp",
+        "unordered_map": "cpp",
+        "initializer_list": "cpp",
+        "xutility": "cpp",
+        "list": "cpp",
+        "xstring": "cpp",
+        "iterator": "cpp",
+        "ostream": "cpp",
+        "iostream": "cpp"
     }
 }
