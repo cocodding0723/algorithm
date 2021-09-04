@@ -112,7 +112,6 @@ void group_down(){
     unordered_map<int, Group>::iterator iter;
     vector<Cell*> dest;
     int down_count = 0;
-    int size = 0;
     int cur_row;
 
     for (iter = groups.begin(); iter != groups.end(); iter++){
@@ -122,7 +121,6 @@ void group_down(){
         dest.assign(iter->second.last_rows.begin(), iter->second.last_rows.end());
 
         groups[iter->first].last_rows.clear();
-        // size = iter->second.members.size();
 
         for (int i = 0; i < dest.size(); i++){
             if (rand() % 2){
